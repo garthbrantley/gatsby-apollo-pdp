@@ -97,3 +97,118 @@ export const query = graphql`
 ### 3. Add some styling
 
 ### 4. Add product details page (PDP) for products
+
+#### Add PDP page template
+```JSX
+import React from "react"
+import Img from "gatsby-image"
+import { graphql } from "gatsby"
+
+import Layout from "../components/layout"
+
+const ProductDetails = ({ data: { pilonProduct: product } }) => (
+  <Layout>
+    <div className="grid">
+      <div className="image-column">
+        <Img fluid={product.image.localFile.childImageSharp.fluid} />
+      </div>
+      <div className="info-column">
+        <div className="info">
+          <header>
+            <h1>{product.name}</h1>
+            <span>${parseFloat(product.primaryPrice).toFixed(0)}</span>
+          </header>
+          <p>{product.longDesc}</p>
+        </div>
+        <div className="buy">
+          <input className="qty" value="1" />
+          <a className="add" href="/">
+            Add to Bag
+          </a>
+        </div>
+      </div>
+    </div>
+  </Layout>
+)
+
+export default ProductDetails
+
+export const query = graphql`
+  query($slug: String!) {
+    pilonProduct(slug: { eq: $slug }) {
+      slug
+      sku
+      shortDesc
+      longDesc
+      name
+      primaryPrice
+      image {
+        localFile {
+          childImageSharp {
+            fluid {
+              ...GatsbyImageSharpFluid
+            }
+          }
+        }
+      }
+    }
+  }
+`
+```
+
+#### Add this gatsby-node.js
+```javascript
+/**
+ * Implement Gatsby's Node APIs in this file.
+ *
+ * See: https://www.gatsbyjs.org/docs/node-apis/
+ */
+const path = require(`path`)
+
+exports.createPages = ({ graphql, actions }) => {
+  const { createPage } = actions
+  return graphql(`
+    {
+      allPilonProduct {
+        edges {
+          node {
+            sku
+            name
+            slug
+            shortDesc
+            longDesc
+            image {
+              id
+              contentUrl
+              localFile {
+                childImageSharp {
+                  fluid {
+                    src
+                    srcSet
+                    aspectRatio
+                    srcSet
+                    aspectRatio
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `).then(result => {
+    if (result.errors) {
+      return Promise.reject(result.errors)
+    }
+    result.data.allPilonProduct.edges.forEach(({ node }) => {
+      createPage({
+        path: `products${node.slug}`,
+        context: {
+          slug: node.slug,
+        },
+        component: path.resolve(`./src/templates/productDetails.js`),
+      })
+    })
+  })
+}
+```
