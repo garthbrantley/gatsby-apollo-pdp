@@ -1,7 +1,9 @@
 import React from "react"
 import Img from "gatsby-image"
 import { graphql } from "gatsby"
+import gql from "graphql-tag"
 import styled from "styled-components"
+import { Query } from "react-apollo"
 
 import Layout from "../components/layout"
 
@@ -92,6 +94,14 @@ const Wrapper = styled.div`
   }
 `
 
+const APOLLO_QUERY = gql`
+  query($id: ID!) {
+    product(id: $id) {
+      primaryPrice
+    }
+  }
+`
+
 const ProductDetails = ({ data: { pilonProduct: product } }) => (
   <Layout>
     <Wrapper>
@@ -103,12 +113,21 @@ const ProductDetails = ({ data: { pilonProduct: product } }) => (
           <div className="info">
             <header>
               <h1>{product.name}</h1>
-              <span>${parseFloat(product.primaryPrice).toFixed(0)}</span>
+              <Query query={APOLLO_QUERY} variables={{ id: product.pilonId }}>
+                {({ data, loading, error }) => {
+                  let curPrice = product.primaryPrice
+                  if (!loading && !error) {
+                    curPrice = data.product.primaryPrice
+                  }
+
+                  return <span>${parseFloat(curPrice).toFixed(0)}</span>
+                }}
+              </Query>
             </header>
             <p>{product.shortDesc}</p>
           </div>
           <div className="buy">
-            <input className="qty" value="1" />
+            <input className="qty" value="1" readOnly />
             <a className="add" href="/">
               Add to Bag
             </a>
@@ -124,6 +143,7 @@ export default ProductDetails
 export const query = graphql`
   query($slug: String!) {
     pilonProduct(slug: { eq: $slug }) {
+      pilonId
       slug
       sku
       shortDesc
