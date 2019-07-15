@@ -6,7 +6,7 @@ Example product details page (PDP) using static and dynamic data with GatsbyJS a
 
 ### 1. New GatsbyJS project
 
-```
+```bash
 npm install -g gatsby-cli
 gatsby new gatsby-apollo-pdp
 cd gatsby-apollo-pdp
@@ -17,12 +17,14 @@ git push -u origin master
 ### 2. Add products listing from Pilon API
 
 #### Install Pilon source plugin
-```
+
+```bash
 yarn add gatsby-source-pilon
 ```
 
 #### Add to gatsby-config.js
-```json
+
+```javascript
     {
       resolve: 'gatsby-source-pilon',
       options: {
@@ -32,6 +34,7 @@ yarn add gatsby-source-pilon
 ```
 
 #### GraphQL query
+
 ```javascript
 export const query = graphql`
   query ProductsQuery {
@@ -71,6 +74,7 @@ export const query = graphql`
 ```
 
 #### JSX in index.js
+
 ```html
     <div className="product-grid">
       {data.allPilonProduct.edges.map((edge, index) => {
@@ -96,9 +100,81 @@ export const query = graphql`
 
 ### 3. Add some styling
 
+#### Install styled components
+
+```bash
+yarn add gatsby-plugin-styled-components styled-components
+```
+
+##### gatsby-config.js
+
+```javascript
+    `gatsby-plugin-styled-components`,
+```
+
+#### Wrap products grid and style it
+
+```css
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-column-gap: 5vw;
+  @media (min-width: 768px) {
+    margin: 0 40px;
+  }
+  margin: 0 0;
+}
+
+.product-block {
+  margin: 0 0 60px;
+
+  @media (min-width: 768px) {
+    grid-column: span 6 / auto;
+  }
+  @media (min-width: 1024px) {
+    grid-column: span 4 / auto;
+  }
+  grid-column: span 12 / auto;
+  text-align: center;
+
+  h2 {
+    margin: 36px 0 12px 0;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.38;
+    color: #929292;
+  }
+
+  a,
+  a:link,
+  a:visited {
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #000;
+    text-decoration: none;
+
+    svg {
+      margin-left: 12px;
+      stroke: #000;
+      width: 60px;
+    }
+  }
+}
+```
+
 ### 4. Add product details page (PDP) for products
 
 #### Add PDP page template
+
 ```JSX
 import React from "react"
 import Img from "gatsby-image"
@@ -157,6 +233,7 @@ export const query = graphql`
 ```
 
 #### Add this gatsby-node.js
+
 ```javascript
 /**
  * Implement Gatsby's Node APIs in this file.
@@ -212,3 +289,7 @@ exports.createPages = ({ graphql, actions }) => {
   })
 }
 ```
+
+### 5. Add some styling
+
+### 6. Pull in product price dynamically
