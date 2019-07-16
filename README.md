@@ -75,7 +75,10 @@ export const query = graphql`
 
 #### JSX in index.js
 
-```html
+```JSX
+import Img from "gatsby-image"
+import { graphql } from "gatsby"
+
     <div className="product-grid">
       {data.allPilonProduct.edges.map((edge, index) => {
         const product = edge.node
@@ -455,6 +458,11 @@ export const wrapRootElement = ({ element }) => (
 #### Now modify product page template to update price dynamically
 
 ```JSX
+import { Query } from "react-apollo"
+import gql from "graphql-tag"
+
+...
+
 const APOLLO_QUERY = gql`
   query($id: ID!) {
     product(id: $id) {
@@ -469,7 +477,7 @@ const APOLLO_QUERY = gql`
     {({ data, loading, error }) => {
       let curPrice = product.primaryPrice
       if (!loading && !error) {
-        curPrice = data.products.edges[0].node.primaryPrice
+        curPrice = data.product.primaryPrice
       }
 
       return <span>${parseFloat(curPrice).toFixed(0)}</span>
@@ -488,11 +496,13 @@ yarn add @apollo/react-hooks
 ```
 
 #### In gatsby-ssr.js and gatsby-browser.js
+
 ```javascript
 import { ApolloProvider } from "@apollo/react-hooks"
 ```
 
 #### In product page template
+
 ```javascript
 import { useQuery } from '@apollo/react-hooks';
 
