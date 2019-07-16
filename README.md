@@ -487,6 +487,11 @@ Edit "Lipstick" here - https://app.pilon.io/product/ce6ecd1a-0abd-11e9-8761-b334
 yarn add @apollo/react-hooks
 ```
 
+#### In gatsby-ssr.js and gatsby-browser.js
+```javascript
+import { ApolloProvider } from "@apollo/react-hooks"
+```
+
 #### In product page template
 ```javascript
 import { useQuery } from '@apollo/react-hooks';
