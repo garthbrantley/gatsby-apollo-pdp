@@ -3,7 +3,7 @@ import Img from "gatsby-image"
 import { graphql } from "gatsby"
 import gql from "graphql-tag"
 import styled from "styled-components"
-import { Query } from "react-apollo"
+import { useQuery } from '@apollo/react-hooks';
 
 import Layout from "../components/layout"
 
@@ -102,41 +102,40 @@ const APOLLO_QUERY = gql`
   }
 `
 
-const ProductDetails = ({ data: { pilonProduct: product } }) => (
-  <Layout>
-    <Wrapper>
-      <div className="grid">
-        <div className="image-column">
-          <Img fluid={product.image.localFile.childImageSharp.fluid} />
-        </div>
-        <div className="info-column">
-          <div className="info">
-            <header>
-              <h1>{product.name}</h1>
-              <Query query={APOLLO_QUERY} variables={{ id: product.pilonId }}>
-                {({ data, loading, error }) => {
-                  let curPrice = product.primaryPrice
-                  if (!loading && !error) {
-                    curPrice = data.product.primaryPrice
-                  }
+const ProductDetails = ({ data: { pilonProduct: product } }) => {
+  const { loading, error, data } = useQuery(APOLLO_QUERY)
+  let curPrice = product.primaryPrice
+  if (!loading && !error) {
+    curPrice = data.product.primaryPrice
+  }
 
-                  return <span>${parseFloat(curPrice).toFixed(0)}</span>
-                }}
-              </Query>
-            </header>
-            <p>{product.shortDesc}</p>
+  return (
+    <Layout>
+      <Wrapper>
+        <div className="grid">
+          <div className="image-column">
+            <Img fluid={product.image.localFile.childImageSharp.fluid} />
           </div>
-          <div className="buy">
-            <input className="qty" value="1" readOnly />
-            <a className="add" href="/">
-              Add to Bag
-            </a>
+          <div className="info-column">
+            <div className="info">
+              <header>
+                <h1>{product.name}</h1>
+                <span>${parseFloat(curPrice).toFixed(0)}</span>
+              </header>
+              <p>{product.shortDesc}</p>
+            </div>
+            <div className="buy">
+              <input className="qty" value="1" readOnly />
+              <a className="add" href="/">
+                Add to Bag
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    </Wrapper>
-  </Layout>
-)
+      </Wrapper>
+    </Layout>
+  )
+}
 
 export default ProductDetails
 

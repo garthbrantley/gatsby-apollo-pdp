@@ -480,3 +480,22 @@ const APOLLO_QUERY = gql`
 #### Update a product price
 
 Edit "Lipstick" here - https://app.pilon.io/product/ce6ecd1a-0abd-11e9-8761-b334f962f19a/
+
+### 7. Bonus - Use React hooks with Apollo client library
+
+```bash
+yarn add @apollo/react-hooks
+```
+
+#### In product page template
+```javascript
+import { useQuery } from '@apollo/react-hooks';
+
+...
+
+  const { loading, error, data } = useQuery(APOLLO_QUERY)
+  let curPrice = product.primaryPrice
+  if (!loading && !error) {
+    curPrice = data.product.primaryPrice
+  }
+```
